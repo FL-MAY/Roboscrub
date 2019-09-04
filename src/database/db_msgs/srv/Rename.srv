@@ -1,0 +1,8 @@
+string MAP  = 'Map'
+string PLAN = 'Plan'
+string PATH = 'Path'
+string ZONE = 'Zone' 
+string type
+string old_name 
+string new_name
+---

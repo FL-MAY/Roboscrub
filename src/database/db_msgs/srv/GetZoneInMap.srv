@@ -1,0 +1,5 @@
+bool     by_map_name
+uint32   map_id
+string   name
+---
+uint32[] zones

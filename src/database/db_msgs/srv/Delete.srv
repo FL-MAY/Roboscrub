@@ -1,0 +1,8 @@
+string MAP  = 'Map'
+string PLAN = 'Plan'
+string PATH = 'Path'
+string ZONE = 'Zone' 
+string type #In which type the data should be deleted
+string name #Name of Plan or Map or Zone or Path need to be deleted
+---
+
