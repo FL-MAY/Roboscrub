@@ -9,8 +9,10 @@
 #include <vector>
 #include <std_srvs/Empty.h>
 #include <std_msgs/UInt32.h>
+#include <std_msgs/Int32.h>
 #include <nav_msgs/Path.h>
 #include <nav_msgs/OccupancyGrid.h>
+#include <db_msgs/Type.h>
 #include <db_msgs/GetPlan.h>
 #include <db_msgs/GetTask.h>
 #include <db_msgs/Rename.h>
@@ -21,10 +23,17 @@
 #include <db_msgs/AddMap.h>
 #include <db_msgs/GetMap.h>
 #include <db_msgs/UpdateMap.h>
-#include <db_msgs/GetZoneInMap.h>
+#include <db_msgs/GetListInMap.h>
+#include <db_msgs/GetInitialZones.h>
 #include <db_msgs/GetZone.h>
 #include <db_msgs/AddZone.h>
+#include <db_msgs/GetPath.h>
+#include <db_msgs/AddPath.h>
+#include <db_msgs/GetList.h>
+#include <db_msgs/SetMarkPoint.h>
+#include <db_msgs/GetMarkPoint.h>
 #include <tf2/LinearMath/Quaternion.h>
+#include <tf2/LinearMath/Matrix3x3.h>
 
 namespace rock::scrubber::database {
 	struct Task {
@@ -42,6 +51,8 @@ namespace rock::scrubber::database {
 
 	private:
 		void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg);
+
+		void trackingCallback(const nav_msgs::Path::ConstPtr& msg){path_ = *msg;}
 
 		bool openDatabase(const char* path);
 
@@ -71,11 +82,29 @@ namespace rock::scrubber::database {
 
 		bool clearOldMap(std_srvs::EmptyRequest&, std_srvs::EmptyResponse&);
 
-		bool getZoneInMap(db_msgs::GetZoneInMapRequest& req, db_msgs::GetZoneInMapResponse& resp);
+		bool getListInMap(db_msgs::GetListInMapRequest& req, db_msgs::GetListInMapResponse& resp);
+
+		bool getInitialZones(db_msgs::GetInitialZonesRequest& req, db_msgs::GetInitialZonesResponse& resp);
 
 		bool getZone(db_msgs::GetZoneRequest& req, db_msgs::GetZoneResponse& resp);
 
 		bool addZone(db_msgs::AddZoneRequest& req, db_msgs::AddZoneResponse&);
+
+		bool getPath(db_msgs::GetPathRequest& req, db_msgs::GetPathResponse& resp);
+
+		bool addPath(db_msgs::AddPathRequest& req, db_msgs::AddPathResponse&);
+
+		bool getList(db_msgs::GetListRequest& req, db_msgs::GetListResponse& resp);
+
+		bool setMarkPoint(db_msgs::SetMarkPointRequest& req, db_msgs::SetMarkPointResponse& resp);
+
+		bool getMarkPoint(db_msgs::GetMarkPointRequest& req, db_msgs::GetMarkPointResponse& resp);
+
+		bool insertPath(std::string& path_id, nav_msgs::Path& path);
+
+		double quaternionToYaw(geometry_msgs::Quaternion& orientation);
+
+		uint32_t getId(const std::string& type, std::string& name);
 
 		int32_t sqlExec(const char* sql_state, int (* callback_fuc)(void*, int, char**, char**));
 
@@ -104,15 +133,22 @@ namespace rock::scrubber::database {
 		ros::ServiceServer update_map_srv_;
 		ros::ServiceServer clear_map_srv_;
 		ros::ServiceServer get_map_zones_srv_;
+		ros::ServiceServer get_init_zones_srv_;
 		ros::ServiceServer get_zone_srv_;
 		ros::ServiceServer add_zone_srv_;
+		ros::ServiceServer get_path_srv_;
+		ros::ServiceServer add_path_srv_;
+		ros::ServiceServer get_list_srv_;
+		ros::ServiceServer set_mark_srv_;
+		ros::ServiceServer get_mark_srv_;
 		ros::Subscriber    map_sub_;
+		ros::Subscriber    path_sub_;
 		ros::Publisher     map_pub_;
 		ros::Publisher     map_id_pub_;
 
 		char* err_msg_;
-		uint8_t               squeegee_, brush_, flow_, vacuum_;
 		bool                  is_open_;
+		nav_msgs::Path        path_;
 		std::vector<uint32_t> tasks_;
 		std::vector<uint32_t> zones_;
 		Task                  task_content_;

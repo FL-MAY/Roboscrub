@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
              roscpp
              db_msgs
              launcher_msgs
+             roborock_app
              tf2
              tf2_ros
              )

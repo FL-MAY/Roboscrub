@@ -12,7 +12,7 @@ DWAPlannerROS:
   min_vel_trans:  0.225
 
   max_vel_theta: 1.0
-  min_vel_theta: 0.5
+  min_vel_theta: 0.1
 
   acc_lim_x: 2.5
   acc_lim_y: 0.0
@@ -46,4 +46,4 @@ DWAPlannerROS:
   publish_traj_pc : true
   publish_cost_grid_pc: true
 
-  prune_plan: false
+  prune_plan: true

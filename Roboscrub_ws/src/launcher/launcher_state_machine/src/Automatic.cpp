@@ -22,9 +22,6 @@ namespace rock::scrubber::launcher {
 			ROS_ERROR("nullptr states!");
 		}
 
-		//Launch navigation
-		//fp_ = popen("roslaunch navigator navigator.launch", "r");
-
 		//Get Tasks
 		ros::NodeHandle    n;
 		ros::ServiceClient db_client = n.serviceClient<db_msgs::GetPlan>("scrubber_database/getPlan");
@@ -53,12 +50,15 @@ namespace rock::scrubber::launcher {
 		if (!move_base_ol_) {
 			ROS_INFO("Move base controller is not online");
 		}
+
 		if (!exe_path_ol_) {
 			ROS_INFO("Exe path controller is not online");
 		}
+
 		if (!get_path_ol_) {
 			ROS_INFO("Get path is not online");
 		}
+
 		if (patient < 10) {
 			ROS_INFO("All controller is on line");
 		}
@@ -96,11 +96,13 @@ namespace rock::scrubber::launcher {
 				return;
 			}
 
-			if (update_task) {
-				states_->setConfig(task_srv.response.config_id);
-				scrubber_msgs::SetPathConfig path_config;
-				path_config.request.config_id = task_srv.response.config_id;
-				ros::service::call("scrubber/setPathConfig",path_config);
+			if (send_path) {
+				if(setConfig(task_srv.response.config_id)){
+					states_->setConfig(task_srv.response.config_id);
+				}
+				else{
+					ROS_ERROR("fail to set clean config");
+				}
 			}
 
 			mbf_msgs::MoveBaseGoal cur_goal;
@@ -144,7 +146,9 @@ namespace rock::scrubber::launcher {
 							sendGoal(cur_goal);
 						} else {
 							sendGoal(cur_path);
+							setConfig(states_->getConfig());
 						}
+
 						states_->shiftState(States::AUTOMATIC);
 					}
 					continue;
@@ -153,11 +157,13 @@ namespace rock::scrubber::launcher {
 				if (pause_) {
 					cancelGoal();
 					states_->shiftState(States::PAUSE);
+					resetConfig();
 					continue;
 				}
 
 				if (cancelled_) {
 					cancelGoal();
+					resetConfig();
 					done_    = true;
 					success_ = false;
 					break;
@@ -167,8 +173,15 @@ namespace rock::scrubber::launcher {
 
 				// TODO: Check error level
 				uint8_t error = states_->getError();
+				if(error == 2){
+					//ROS_ERROR("Unable to set clean config");
+				}
 
-				if (done_) break;
+				if (done_){
+					resetConfig();
+					states_->setConfig(0);
+					break;
+				}
 				r.sleep();
 			}
 
@@ -219,8 +232,6 @@ namespace rock::scrubber::launcher {
 		} else {
 			path_ctrl_->cancelGoal();
 		}
-
-		publishZeroVolocity();
 	}
 
 	void Automatic::updateMission() {
@@ -259,14 +270,29 @@ namespace rock::scrubber::launcher {
 		return true;
 	}
 
-	void Automatic::publishZeroVolocity() {
-		ros::NodeHandle n;
-		ros::Publisher pub = n.advertise<geometry_msgs::Twist>("cmd_vel",5);
-		geometry_msgs::Twist zero;
-		ros::Rate r(10);
-		for(int i = 0 ; i<5;i++) {
-			pub.publish(zero);
-			r.sleep();
+	bool Automatic::resetConfig() {
+		scrubber_msgs::SetCleanConfig config;
+		config.request.brush = 0;
+		config.request.squeegee = 0;
+		config.request.vacuum = 0;
+		config.request.flow = 0;
+		if(!ros::service::call("ctlserverset",config)){
+			ROS_ERROR("Fail to reset clean config");
+			states_->setError(2);
+			return false;
 		}
+		return true;
+	}
+
+	bool Automatic::setConfig(uint32_t config_id) {
+		scrubber_msgs::SetPathConfig config;
+		config.request.config_id = config_id;
+		if(ros::service::call("scrubber/setPathConfig",config)){
+			states_->setConfig(config_id);
+			return true;
+		}
+
+		states_->setError(2);
+		return false;
 	}
 }//namespace

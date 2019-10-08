@@ -4,13 +4,13 @@ project(database)
 find_package(catkin REQUIRED COMPONENTS
              roscpp
              std_srvs
-             db_msgs
              nav_msgs
              tf2
+             db_msgs
              )
 
 catkin_package(
-		INCLUDE_DIRS include
+		#INCLUDE_DIRS include
 		#  LIBRARIES launcher_state_machine
 		CATKIN_DEPENDS roscpp db_msgs nav_msgs tf2
 		#DEPENDS lsqlite3

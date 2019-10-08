@@ -6,7 +6,7 @@
   <arg name="smach" default="true" />
 
   <!-- move_base_flex -->
-  <node pkg="mbf_costmap_nav" type="mbf_costmap_nav" respawn="false" name="move_base_flex" output="screen">
+  <node pkg="mbf_costmap_nav" type="mbf_costmap_nav" respawn="false" name="move_base_flex">
     <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
     <rosparam file="$(find navigator)/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find navigator)/param/costmap_common_params.yaml" command="load" ns="local_costmap" />
@@ -21,9 +21,9 @@
   </node>
 
   <!-- SMACH Navigation State Machine -->
-  <node if="$(arg smach)" pkg="navigator" type="mbf_state_machine.py" name="mbf_state_machine" output="screen"/>
+  <node if="$(arg smach)" pkg="navigator" type="mbf_state_machine.py" name="mbf_state_machine" output="screen" required="true"/>
 
   <!-- Speed Ratio -->
-    <node name="speed_ratio" pkg="navigator" type="speed_ratio" ></node>
+    <node name="speed_ratio" pkg="navigator" type="speed_ratio"></node>
 
 </launch>

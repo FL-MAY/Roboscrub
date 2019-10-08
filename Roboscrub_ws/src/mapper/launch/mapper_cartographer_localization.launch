@@ -23,8 +23,8 @@
 
   <node name="cartographer_node" pkg="cartographer_ros"
       type="cartographer_node" args="
-          -configuration_directory $(find scrubber_gazebo)/configuration_files
-          -configuration_basename scrubber_2d.lua
+          -configuration_directory $(find mapper)/config
+          -configuration_basename scrubber_2d_localization.lua
           -load_state_filename $(arg load_state_filename)"
       output="screen">
     <remap from="echoes" to="horizontal_laser_2d" />

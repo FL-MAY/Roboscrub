@@ -12,7 +12,8 @@
 
 namespace rock::scrubber::launcher {
 	ScrubberStates::ScrubberStates()
-			: charging_(false), error_(0), config_(0), state_(States::IDLE), last_state_(States::IDLE) {
+			: charging_(false), relocated_(false), map_available_(false), error_(0), config_(0), state_(States::IDLE),
+			  last_state_(States::IDLE) {
 
 		name_[States::IDLE]      = "IDLE";
 		name_[States::AUTOMATIC] = "Automatic";
@@ -23,6 +24,8 @@ namespace rock::scrubber::launcher {
 		name_[States::TRACKING]  = "Tracking";
 		name_[States::PAUSE]     = "Pause";
 		name_[States::PREPARING] = "Preparing";
+		ros::NodeHandle n;
+		map_sub_ = n.subscribe("scrubber_database/map_id", 1, &ScrubberStates::mapCallback, this);
 	}
 
 	void ScrubberStates::shiftState(const uint8_t& newState) {
@@ -40,4 +43,8 @@ namespace rock::scrubber::launcher {
 		return "?";
 	}
 
+	void ScrubberStates::mapCallback(const std_msgs::UInt32::ConstPtr& msg) {
+		map_id_        = msg->data;
+		map_available_ = true;
+	}
 }

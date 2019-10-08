@@ -50,6 +50,8 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
    FILES
    Task.msg
+   Content.msg
+   Type.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -66,8 +68,14 @@ add_service_files(
    GetMap.srv
    UpdateMap.srv
    GetZone.srv
-   GetZoneInMap.srv
+   GetListInMap.srv
    AddZone.srv
+   GetPath.srv
+   AddPath.srv
+   GetList.srv
+   GetInitialZones.srv
+   SetMarkPoint.srv
+   GetMarkPoint.srv
 )
 
 ## Generate actions in the 'action' folder

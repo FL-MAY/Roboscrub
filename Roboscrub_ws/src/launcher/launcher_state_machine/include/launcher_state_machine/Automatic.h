@@ -21,9 +21,10 @@
 #include <db_msgs/GetPlan.h>
 #include <db_msgs/GetTask.h>
 #include <scrubber_msgs/SetPathConfig.h>
+#include <scrubber_msgs/SetCleanConfig.h>
 #include <actionlib/client/simple_action_client.h>
-#include "launcher_state_machine/Mission.h"
-#include "launcher_state_machine/ScrubberStates.h"
+#include "Mission.h"
+#include "ScrubberStates.h"
 
 namespace rock::scrubber::launcher {
 	class Automatic : public Mission {
@@ -61,7 +62,9 @@ namespace rock::scrubber::launcher {
 
 		void updateMission();
 
-		void publishZeroVolocity();
+		bool setConfig(uint32_t config_id);
+
+		bool resetConfig();
 
 		uint32_t id_;
 

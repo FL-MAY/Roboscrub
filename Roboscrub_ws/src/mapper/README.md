@@ -47,3 +47,15 @@ Like `roslaunch mapper mapper.launch pure_localization:=true initial_x:=1.0 init
 * Wait the robot localization a correct angle.<br>
 * Move the robot for incrementally mapping.<br>
 * When finish, save the new map and pbstream file.<br>
+
+Debug mapping
+---
+* Purpose: simulate mapping process from ros bag files.<br>
+* How to record bag files:<br>
+You can simply record all topic by command `rosbag record -a`, but we perfer only record useful topic by command `rosbag record "topic=='/tf_static' or topic=='/tf' or topic=='/odom' or topic=='/scan'"`, needless message will confuse cartographer.<br>
+* How to simulate:<br>
+First of all, we can put bag files in ${HOME}/workspace/RoboScrub_Nav/src/mapper/ROS_bag/, otherwise we can change the log dir in code.<br>
+Then we need filter bag files to delete map related tf message, cause it's generate by cartographer on real machine.<br>
+It's like `rosbag filter origin.bag filtered.bag 'topic!="/tf" or m.transforms[0].header.frame_id != "map"'`<br>
+At last, simulate command is like `roslaunch mapper simu_backpack.launch bag_filename:=${HOME}/workspace/RoboScrub_Nav/src/mapper/ROS_bag/filtered.bag`.<br>
+You can modify the replay rate in simu_backpack.launch.

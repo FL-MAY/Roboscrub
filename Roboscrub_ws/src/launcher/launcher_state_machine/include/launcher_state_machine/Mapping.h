@@ -9,8 +9,8 @@
 //*********************************************************
 
 #pragma once
-#include "launcher_state_machine/Mission.h"
-#include "launcher_state_machine/ScrubberStates.h"
+#include "Mission.h"
+#include "ScrubberStates.h"
 
 namespace rock::scrubber::launcher {
 	class Mapping : public Mission {
@@ -24,10 +24,6 @@ namespace rock::scrubber::launcher {
 		void resume() override;
 
 		void cancel() override;
-
-		bool isDone() const override { return done_; }
-
-		bool isSuccess() const override { return success_; }
 
 	private:
 		std::shared_ptr<ScrubberStates> states_;

@@ -5,15 +5,15 @@ find_package(catkin REQUIRED COMPONENTS
              actionlib
              geometry_msgs
              mbf_msgs
-             scrubber_msgs
              roscpp
              std_srvs
+             launcher_msgs
              )
 
 catkin_package(
 		#  INCLUDE_DIRS include
 		#  LIBRARIES launcher_state_machine
-		CATKIN_DEPENDS geometry_msgs launcher_msgs mbf_msgs db_msgs roscpp
+		CATKIN_DEPENDS geometry_msgs launcher_msgs mbf_msgs db_msgs roscpp scrubber_msgs
 		#  DEPENDS system_lib
 )
 
@@ -43,13 +43,23 @@ add_library(Automatic
 add_library(Mapping
             src/Mapping.cpp)
 
+add_library(Tracking
+            src/Tracking.cpp)
+
+add_library(Manual
+            src/Manual.cpp)
+
 target_link_libraries(Automatic ScrubberStates)
 target_link_libraries(Mapping ScrubberStates)
+target_link_libraries(Tracking ScrubberStates)
+target_link_libraries(Manual  ScrubberStates)
 
 target_link_libraries(StateMachine
                       ScrubberStates
                       Automatic
                       Mapping
+                      Tracking
+                      Manual
                       ${Boost_LIBRARIES}
                       ${catkin_LIBRARIES}
                       )

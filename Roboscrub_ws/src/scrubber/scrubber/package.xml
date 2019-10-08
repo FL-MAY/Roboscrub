@@ -41,6 +41,7 @@
   <depend>db_msgs</depend>
   <depend>launcher_msgs</depend>
   <depend>scrubber_msgs</depend>
+  <depend>roborock_app</depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

@@ -80,6 +80,7 @@ generate_messages(
   geometry_msgs
   std_msgs
   nav_msgs
+  std_srvs
 )
 
 ################################################

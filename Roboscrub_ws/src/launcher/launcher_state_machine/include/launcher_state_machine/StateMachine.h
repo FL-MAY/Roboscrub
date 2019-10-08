@@ -26,9 +26,13 @@
 #include <launcher_msgs/LauncherAction.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
-#include "launcher_state_machine/ScrubberStates.h"
-#include "launcher_state_machine/Automatic.h"
-#include "launcher_state_machine/Mapping.h"
+#include <db_msgs/GetInitialZones.h>
+#include <db_msgs/GetZone.h>
+#include "ScrubberStates.h"
+#include "Automatic.h"
+#include "Mapping.h"
+#include "Tracking.h"
+#include "Manual.h"
 
 namespace rock::scrubber::launcher {
 	class StateMachine {
@@ -61,7 +65,13 @@ namespace rock::scrubber::launcher {
 
 		bool prepareState(uint8_t state);
 
+		bool relocationService(std_srvs::EmptyRequest&, std_srvs::EmptyResponse&);
+
 		bool relocation(amcl::RectPara area);
+
+		bool relocation();
+
+		double quaternionToYaw(geometry_msgs::Quaternion& orientation);
 
 		launcher_msgs::LauncherResult getResult();
 
@@ -75,6 +85,7 @@ namespace rock::scrubber::launcher {
 		ros::ServiceServer resume_srv_;
 		ros::ServiceServer start_srv_;
 		ros::ServiceServer prepare_srv_;
+		ros::ServiceServer relocation_srv_;
 		ros::Subscriber    pause_sub_;
 		ros::Subscriber    pose_sub_;
 		ros::Publisher     state_pub_;
